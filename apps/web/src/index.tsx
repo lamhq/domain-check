@@ -1,0 +1,23 @@
+import { ThemeProvider } from '@mui/material/styles';
+import { StrictMode } from 'react';
+import reactDom from 'react-dom/client';
+import { BrowserRouter } from 'react-router';
+import App from './App';
+import './styles.css';
+import { theme } from './theme';
+
+const rootEl = document.getElementById('root');
+if (rootEl) {
+  const root = reactDom.createRoot(rootEl);
+  root.render(
+    <StrictMode>
+      {/* Material UI */}
+      <ThemeProvider theme={theme}>
+        {/* React Router */}
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
+    </StrictMode>,
+  );
+}
