@@ -2,7 +2,6 @@ import axios from 'axios';
 import type { SignInFormData } from './organisms/SignInForm';
 
 export type SignInResponse = {
-  token: string;
   user: {
     id: string;
     email: string;
@@ -20,7 +19,7 @@ const isApiError = (error: unknown): error is ApiError => {
 const isSignInResponse = (data: unknown): data is SignInResponse => {
   if (typeof data !== 'object' || data === null) return false;
 
-  return 'token' in data && 'user' in data;
+  return 'user' in data;
 };
 
 export const signInMutation = async (

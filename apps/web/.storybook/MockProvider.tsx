@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { MemoryRouter } from 'react-router';
 import { theme } from '../src/theme';
 
@@ -18,6 +19,7 @@ export default function MockProvider({ children }: MockProviderProps) {
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>{children}</MemoryRouter>
       </QueryClientProvider>
+      <Toaster position="top-center" />
     </ThemeProvider>
   );
 }

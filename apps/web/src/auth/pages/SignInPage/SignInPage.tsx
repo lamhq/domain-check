@@ -1,16 +1,19 @@
 import { useMutation } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router';
 import { signInMutation, type SignInResponse } from '../../api';
 
 import SignInForm, { type SignInFormData } from '../../organisms/SignInForm';
 
 const defaultValues: SignInFormData = {
-  username: '',
-  password: '',
+  username: 'test@test.com',
+  password: 'password',
 };
 
 export default function SignInPage() {
+  const navigate = useNavigate();
   const { mutate: signIn, isPending } = useMutation<
     SignInResponse,
     Error,
@@ -18,11 +21,11 @@ export default function SignInPage() {
   >({
     mutationFn: signInMutation,
     onSuccess: () => {
-      alert('Successfully signed in!');
-      // TODO: Handle navigation after successful sign in
+      toast.success('Successfully signed in!');
+      void navigate('/');
     },
-    onError: (error) => {
-      console.error('Sign in failed:', error.message);
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 

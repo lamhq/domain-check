@@ -7,8 +7,19 @@ async function delay(ms: number = DELAY): Promise<void> {
 }
 
 export const handlers = [
-  http.post('api/auth/access-tokens', async () => {
+  http.post('api/auth/access-tokens', async ({ request }) => {
     await delay();
+    const body = (await request.json()) as { username: string; password: string };
+    const { username, password } = body;
+    if (username !== 'test@test.com' || password !== 'password') {
+      return HttpResponse.json(
+        {
+          message: 'Invalid username or password',
+        },
+        { status: 401 },
+      );
+    }
+
     return HttpResponse.json({
       token: 'token',
       user: {

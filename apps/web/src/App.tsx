@@ -13,7 +13,7 @@ export default function App() {
           <Route path="/" element={<DashboardPage />} />
         </Route>
       </Routes>
-      <Toaster position="top-right" />
+      <Toaster position="top-center" />
     </>
   );
 }
