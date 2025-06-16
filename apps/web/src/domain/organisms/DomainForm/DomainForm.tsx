@@ -2,7 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { addDomainMutation, type Domain } from '../../api';
+import { addDomainMutation } from '../../api';
+import type { Domain } from '../../types';
 
 import DomainFormView, { type DomainFormData } from '../DomainFormView';
 
@@ -10,7 +11,7 @@ export default function DomainForm() {
   const { mutate: addDomain, isPending } = useMutation<Domain, Error, string>({
     mutationFn: addDomainMutation,
     onSuccess: (data) => {
-      toast.success(data.status);
+      toast.success(`Added ${data.domain} to the list`);
     },
     onError: (error: Error) => {
       toast.error(error.message);

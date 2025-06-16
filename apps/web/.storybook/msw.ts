@@ -36,6 +36,7 @@ export const handlers = [
       status: 'passed',
       domain: 'example.com',
       updatedAt: new Date(),
+      createdAt: new Date(),
       dmarc: true,
       spf: true,
       dkim: true,
