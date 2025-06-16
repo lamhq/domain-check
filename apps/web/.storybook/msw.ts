@@ -29,8 +29,16 @@ export const handlers = [
     });
   }),
 
-  http.get('api/domains', async () => {
+  http.post('api/domains', async () => {
     await delay();
-    return HttpResponse.json([]);
+    return HttpResponse.json({
+      id: '123',
+      status: 'passed',
+      domain: 'example.com',
+      updatedAt: new Date(),
+      dmarc: true,
+      spf: true,
+      dkim: true,
+    });
   }),
 ];

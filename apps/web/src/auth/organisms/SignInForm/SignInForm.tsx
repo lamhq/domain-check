@@ -60,7 +60,7 @@ export type SignInFormData = {
 export type SignInFormProps = {
   defaultValues: SignInFormData;
   onSubmit: SubmitHandler<SignInFormData>;
-  isSubmitting: boolean;
+  isSubmitting?: boolean;
 };
 
 const signInFormSchema = yup.object().shape({
@@ -74,7 +74,7 @@ const signInFormSchema = yup.object().shape({
 export default function SignInForm({
   defaultValues,
   onSubmit,
-  isSubmitting,
+  isSubmitting = false,
 }: SignInFormProps) {
   const {
     control,
