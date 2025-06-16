@@ -9,6 +9,7 @@
     "dev": "rsbuild dev --port 6001",
     "preview": "rsbuild preview",
     "lint": "tsc --noEmit && eslint",
+    "format": "prettier --write .",
     "test": "jest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
