@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
-const DELAY = 2000;
+const DELAY = 1000;
 
 async function delay(ms: number = DELAY): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
