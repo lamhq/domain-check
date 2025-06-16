@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-type-assertion */
 import { ThemeProvider } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router';
 import { theme } from '../src/theme';
@@ -9,11 +10,15 @@ export type MockProviderProps = {
   children: ReactNode;
 };
 
+const queryClient = new QueryClient();
+
 export default function MockProvider({ children }: MockProviderProps) {
   return (
     // Material UI
     <ThemeProvider theme={theme}>
-      <MemoryRouter>{children}</MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>{children}</MemoryRouter>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

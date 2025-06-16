@@ -1,9 +1,10 @@
 import { MINIMAL_VIEWPORTS } from '@storybook/addon-viewport';
 import type { Preview } from '@storybook/react';
 import { initialize, mswLoader } from 'msw-storybook-addon';
-import { handlers } from '../src/msw/handlers';
-import '../src/styles.css';
 import MockProvider from './MockProvider';
+import { handlers } from './msw';
+
+import '../src/styles.css';
 
 // Initialize Mock Service Worker
 initialize();
