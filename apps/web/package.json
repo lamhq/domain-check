@@ -1,6 +1,6 @@
 {
   "name": "web",
-  "description": "React Web App Template",
+  "description": "React Web App",
   "packageManager": "pnpm@9.15.1",
   "private": true,
   "version": "1.0.0",

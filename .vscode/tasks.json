@@ -17,6 +17,11 @@
           "endsPattern": "ready\\s+built in.*$"
         }
       }
+    },
+    {
+      "label": "dev:api",
+      "type": "npm",
+      "script": "dev:api"
     }
   ]
 }
