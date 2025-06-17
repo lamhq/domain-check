@@ -19,7 +19,11 @@ export default function MockProvider({ children }: MockProviderProps) {
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider
+            initialState={{ user: { id: '123', email: 'admin@example.com' } }}
+          >
+            {children}
+          </AuthProvider>
         </MemoryRouter>
       </QueryClientProvider>
       <Toaster position="top-center" />
