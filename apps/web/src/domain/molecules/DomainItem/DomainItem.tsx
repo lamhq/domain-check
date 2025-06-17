@@ -1,58 +1,39 @@
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import CancelTwoToneIcon from '@mui/icons-material/CancelTwoTone';
-import HourglassTopTwoToneIcon from '@mui/icons-material/HourglassTopTwoTone';
-import VerifiedTwoToneIcon from '@mui/icons-material/VerifiedTwoTone';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
+import RecordCheckStatus from '../../atoms/RecordCheckStatus';
+import StatusIcon from '../../atoms/StatusIcon';
 
-import type { Domain } from '../../types';
+import { useMemo } from 'react';
+import { RecordType, type Domain } from '../../types';
 
 export type DomainItemProps = {
   domain: Domain;
 };
 
-function getIcon(status: Domain['status']) {
-  let icon = null;
-  switch (status) {
-    case 'pending':
-      icon = <HourglassTopTwoToneIcon />;
-      break;
-    case 'passed':
-      icon = <VerifiedTwoToneIcon color="success" />;
-      break;
-    case 'failed':
-      icon = <CancelTwoToneIcon color="error" />;
-      break;
-  }
-  return icon;
-}
-
 export default function DomainItem({ domain }: DomainItemProps) {
-  let statusText = '';
-  let passedCount = 0;
-  if (domain.dmarc) passedCount++;
-  if (domain.spf) passedCount++;
-  if (domain.dkim) passedCount++;
-  const totalCount = 3;
+  const statusText = useMemo(() => {
+    switch (domain.status) {
+      case 'passed':
+        return 'passed';
+      case 'failed':
+        return 'failed';
+      case 'pending':
+        return 'checking...';
+      default:
+        return '';
+    }
+  }, [domain.status]);
 
-  switch (domain.status) {
-    case 'passed':
-      statusText = 'passed';
-      break;
-    case 'failed':
-      statusText = 'failed';
-      break;
-    case 'pending':
-      statusText = 'checking...';
-      break;
-  }
+  const passedCount = [domain.dmarc, domain.spf, domain.dkim].filter(Boolean).length;
+  const totalCount = 3;
 
   return (
     <Accordion>
       <AccordionSummary
-        expandIcon={<ArrowDownwardIcon />}
+        expandIcon={<ExpandMoreIcon />}
         id={`panel-${domain.id}-header`}
         sx={{
           '& .MuiAccordionSummary-content': {
@@ -62,18 +43,25 @@ export default function DomainItem({ domain }: DomainItemProps) {
           },
         }}
       >
-        {getIcon(domain.status)}
+        <StatusIcon status={domain.status} />
         <Typography component="span">{domain.domain}</Typography>
         <Typography component="span">
           ({statusText}
           {domain.status !== 'pending' && ` ${passedCount}/${totalCount}`})
         </Typography>
       </AccordionSummary>
-      <AccordionDetails>
-        <Typography>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-          malesuada lacus ex, sit amet blandit leo lobortis eget.
-        </Typography>
+      <AccordionDetails sx={{ display: 'flex', flexDirection: 'column', rowGap: 1 }}>
+        {domain.status === 'pending' ? (
+          <Typography component="span">
+            The check is still in progress. Please check back later.
+          </Typography>
+        ) : (
+          <>
+            <RecordCheckStatus domain={domain} recordType={RecordType.SPF} />
+            <RecordCheckStatus domain={domain} recordType={RecordType.DKIM} />
+            <RecordCheckStatus domain={domain} recordType={RecordType.DMARC} />
+          </>
+        )}
       </AccordionDetails>
     </Accordion>
   );

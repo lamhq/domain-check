@@ -11,3 +11,9 @@ export type Domain = {
   dkim: boolean;
   dkimError?: string;
 };
+
+export enum RecordType {
+  SPF = 'SPF',
+  DKIM = 'DKIM',
+  DMARC = 'DMARC',
+}
