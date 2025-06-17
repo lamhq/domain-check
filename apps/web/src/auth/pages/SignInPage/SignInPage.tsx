@@ -5,7 +5,10 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router';
 import { signInMutation, type SignInResponse } from '../../api';
 
+import { useSignIn } from '../..';
+import { HOME_ROUTE } from '../../../routes';
 import SignInForm, { type SignInFormData } from '../../organisms/SignInForm';
+import type { User } from '../../types';
 
 const defaultValues: SignInFormData = {
   username: 'test@test.com',
@@ -14,15 +17,17 @@ const defaultValues: SignInFormData = {
 
 export default function SignInPage() {
   const navigate = useNavigate();
+  const authenticate = useSignIn<User>();
   const { mutate: signIn, isPending } = useMutation<
     SignInResponse,
     Error,
     SignInFormData
   >({
     mutationFn: signInMutation,
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success('Successfully signed in!');
-      void navigate('/');
+      authenticate(data);
+      void navigate(HOME_ROUTE);
     },
     onError: (error: Error) => {
       toast.error(error.message);

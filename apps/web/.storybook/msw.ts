@@ -21,7 +21,6 @@ export const handlers = [
     }
 
     return HttpResponse.json({
-      token: 'token',
       user: {
         id: '123',
         email: 'test@test.com',

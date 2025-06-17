@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { MemoryRouter } from 'react-router';
+import { AuthProvider } from '../src/auth';
 import { theme } from '../src/theme';
 
 // #region MockProvider
@@ -17,7 +18,9 @@ export default function MockProvider({ children }: MockProviderProps) {
     // Material UI
     <ThemeProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter>{children}</MemoryRouter>
+        <MemoryRouter>
+          <AuthProvider>{children}</AuthProvider>
+        </MemoryRouter>
       </QueryClientProvider>
       <Toaster position="top-center" />
     </ThemeProvider>

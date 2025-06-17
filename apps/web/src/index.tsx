@@ -2,13 +2,13 @@ import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import reactDom from 'react-dom/client';
+import { Toaster } from 'react-hot-toast';
 import { BrowserRouter } from 'react-router';
+import App from './App';
+import { AuthProvider } from './auth';
 
 import './styles.css';
 import { theme } from './theme';
-
-import { Toaster } from 'react-hot-toast';
-import App from './App';
 
 // React Query
 const queryClient = new QueryClient();
@@ -24,7 +24,10 @@ if (rootEl) {
         <BrowserRouter>
           {/* React Query */}
           <QueryClientProvider client={queryClient}>
-            <App />
+            {/* Auth Provider */}
+            <AuthProvider>
+              <App />
+            </AuthProvider>
             <Toaster position="top-center" />
           </QueryClientProvider>
         </BrowserRouter>

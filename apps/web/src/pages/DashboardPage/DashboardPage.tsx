@@ -1,8 +1,9 @@
 import { Title } from '../../common/templates/MainLayout';
 import DomainForm from '../../domain/organisms/DomainForm';
 import DomainList from '../../domain/organisms/DomainList';
+import { requireAuth } from '../../utils';
 
-export default function DashboardPage() {
+function DashboardPage() {
   return (
     <>
       <Title>Dashboard</Title>
@@ -11,3 +12,5 @@ export default function DashboardPage() {
     </>
   );
 }
+
+export default requireAuth(DashboardPage);
