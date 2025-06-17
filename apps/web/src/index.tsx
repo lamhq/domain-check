@@ -18,6 +18,7 @@ if (rootEl) {
       <ThemeProvider theme={theme}>
         {/* React Router */}
         <BrowserRouter>
+          {/* React Query */}
           <QueryClientProvider client={queryClient}>
             <App />
           </QueryClientProvider>

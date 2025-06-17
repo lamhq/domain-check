@@ -42,4 +42,82 @@ export const handlers = [
       dkim: true,
     });
   }),
+
+  http.get('api/domains', async ({ request }) => {
+    await delay();
+    const page = Number(new URL(request.url).searchParams.get('page'));
+    const totalPage = 10;
+    // simulate pagination
+    const items =
+      page % 2 === 0
+        ? [
+            {
+              id: '1',
+              domain: 'example.com',
+              status: 'passed',
+              updatedAt: new Date(),
+              createdAt: new Date(),
+              dmarc: true,
+              spf: true,
+              dkim: true,
+            },
+            {
+              id: '2',
+              domain: 'test.com',
+              status: 'failed',
+              updatedAt: new Date(),
+              createdAt: new Date(),
+              dmarc: false,
+              spf: false,
+              dkim: true,
+            },
+            {
+              id: '3',
+              domain: 'demo.com',
+              status: 'pending',
+              updatedAt: new Date(),
+              createdAt: new Date(),
+              dmarc: false,
+              spf: false,
+              dkim: false,
+            },
+          ]
+        : [
+            {
+              id: '4',
+              domain: 'site1.com',
+              status: 'passed',
+              updatedAt: new Date(),
+              createdAt: new Date(),
+              dmarc: true,
+              spf: true,
+              dkim: true,
+            },
+            {
+              id: '5',
+              domain: 'site2.com',
+              status: 'failed',
+              updatedAt: new Date(),
+              createdAt: new Date(),
+              dmarc: false,
+              spf: true,
+              dkim: false,
+            },
+            {
+              id: '6',
+              domain: 'site3.com',
+              status: 'pending',
+              updatedAt: new Date(),
+              createdAt: new Date(),
+              dmarc: false,
+              spf: false,
+              dkim: false,
+            },
+          ];
+    return HttpResponse.json(items, {
+      headers: {
+        'x-total-count': totalPage.toString(),
+      },
+    });
+  }),
 ];

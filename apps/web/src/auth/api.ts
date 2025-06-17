@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { isApiError } from '../common/api';
 import type { SignInFormData } from './organisms/SignInForm';
 
 export type SignInResponse = {
@@ -8,34 +9,14 @@ export type SignInResponse = {
   };
 };
 
-export type ApiError = {
-  message: string;
-};
-
-const isApiError = (error: unknown): error is ApiError => {
-  return typeof error === 'object' && error !== null && 'message' in error;
-};
-
-const isSignInResponse = (data: unknown): data is SignInResponse => {
-  if (typeof data !== 'object' || data === null) return false;
-
-  return 'user' in data;
-};
-
-export const signInMutation = async (
-  data: SignInFormData,
-): Promise<SignInResponse> => {
+export async function signInMutation(data: SignInFormData): Promise<SignInResponse> {
   try {
-    const { data: responseData } = await axios.post<SignInResponse>(
+    const response = await axios.post<SignInResponse>(
       '/api/auth/access-tokens',
       data,
     );
 
-    if (!isSignInResponse(responseData)) {
-      throw new Error('Invalid response format');
-    }
-
-    return responseData;
+    return response.data;
   } catch (error) {
     if (
       axios.isAxiosError(error) &&
@@ -46,4 +27,4 @@ export const signInMutation = async (
     }
     throw new Error('Failed to sign in');
   }
-};
+}
