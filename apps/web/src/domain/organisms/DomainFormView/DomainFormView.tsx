@@ -42,10 +42,9 @@ export default function DomainFormView({
       component="form"
       onSubmit={handleSubmit(onSubmit)}
       sx={{
-        display: { xs: 'flex' },
-        flexDirection: 'row',
-        width: { xs: '100%', md: 'fit-content' },
-        overflow: 'auto',
+        display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' },
+        columnGap: 1,
       }}
     >
       <Controller
@@ -57,7 +56,7 @@ export default function DomainFormView({
             label="Domain"
             variant="outlined"
             size="small"
-            sx={{ width: 300 }}
+            sx={{ width: 300, height: 40, maxWidth: '100%' }}
             error={!!errors.domain}
             helperText={errors.domain?.message}
             color={errors.domain ? 'error' : 'primary'}
@@ -68,8 +67,8 @@ export default function DomainFormView({
       <Button
         type="submit"
         variant="contained"
-        sx={{ ml: 1, height: 40 }}
         loading={isSubmitting}
+        sx={{ width: 50, height: 40 }}
       >
         Add
       </Button>
