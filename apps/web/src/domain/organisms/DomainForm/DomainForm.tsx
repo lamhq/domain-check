@@ -29,7 +29,7 @@ export default function DomainForm() {
 
   return (
     <DomainFormView
-      defaultValues={{ domain: 'abc.ci' }}
+      defaultValues={{ domain: '' }}
       onSubmit={handleSubmit}
       isSubmitting={isPending}
     />

@@ -4,7 +4,7 @@
 # pytest -svv test_validate_domain_records.py
 
 import pytest
-from main import validate_domain_records
+from utils import validate_domain_records
 
 
 @pytest.mark.parametrize(

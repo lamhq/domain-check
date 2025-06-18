@@ -1,101 +1,53 @@
-import validators.domain as validate_domain
-from checkdmarc.spf import (
-    get_spf_record,
-    SPFRecordNotFound,
-    SPFIncludeLoop,
-    SPFRedirectLoop,
-    SPFSyntaxError,
-    SPFTooManyDNSLookups,
-)
-from checkdmarc.dmarc import (
-    get_dmarc_record,
-    DMARCRecordNotFound,
-    DMARCRecordInWrongLocation,
-    MultipleDMARCRecords,
-    SPFRecordFoundWhereDMARCRecordShouldBe,
-    UnverifiedDMARCURIDestination,
-    DMARCSyntaxError,
-    InvalidDMARCTag,
-    InvalidDMARCTagValue,
-    InvalidDMARCReportURI,
-    UnverifiedDMARCURIDestination,
-    UnrelatedTXTRecordFoundAtDMARC,
-    DMARCReportEmailAddressMissingMXRecords,
-)
+import json
+from confluent_kafka import Consumer, Producer, KafkaError
+from utils import validate_domain_records
 
 
-def validate_domain_records(domain: str) -> dict:
-    result = {
-        "domain": domain,
-        "error": None,
-        "spf": "fail",
-        "spf_error": None,
-        "dmarc": "fail",
-        "dmarc_error": None,
-    }
-
-    if not validate_domain(domain):
-        result["error"] = "Invalid domain"
-        return result
-
-    # SPF validation
-    try:
-        get_spf_record(domain)
-        result["spf"] = "pass"
-    except (
-        SPFRecordNotFound,
-        SPFIncludeLoop,
-        SPFRedirectLoop,
-        SPFSyntaxError,
-        SPFTooManyDNSLookups,
-    ) as e:
-        error_messages = {
-            SPFRecordNotFound: "No SPF record found",
-            SPFIncludeLoop: "SPF include loop detected",
-            SPFRedirectLoop: "SPF redirect loop detected",
-            SPFSyntaxError: "Invalid SPF record syntax",
-            SPFTooManyDNSLookups: "SPF record exceeds maximum DNS lookups (10)",
+def main():
+    consumer = Consumer(
+        {
+            "bootstrap.servers": "localhost:9092",
+            "group.id": "validator-consumer-group",
+            "auto.offset.reset": "earliest",
         }
-        result["spf_error"] = error_messages.get(type(e), str(e))
-        result["error"] = "Domain record check failed"
-    except Exception as e:
-        result["spf_error"] = str(e)
-        result["error"] = "Domain record check failed"
+    )
+    producer = Producer({"bootstrap.servers": "localhost:9092"})
+    producer_topic = "domain-check-results"
+    consumer_topic = "domain-check-requests"
+    consumer.subscribe([consumer_topic])
 
-    # DMARC validation
     try:
-        get_dmarc_record(domain)
-        result["dmarc"] = "pass"
-    except (
-        DMARCRecordNotFound,
-        DMARCRecordInWrongLocation,
-        MultipleDMARCRecords,
-        SPFRecordFoundWhereDMARCRecordShouldBe,
-        UnverifiedDMARCURIDestination,
-        UnrelatedTXTRecordFoundAtDMARC,
-        DMARCReportEmailAddressMissingMXRecords,
-        DMARCSyntaxError,
-        InvalidDMARCTag,
-        InvalidDMARCTagValue,
-        InvalidDMARCReportURI,
-    ) as e:
-        error_messages = {
-            DMARCRecordNotFound: "No DMARC record found",
-            DMARCRecordInWrongLocation: "DMARC record in wrong location",
-            MultipleDMARCRecords: "Multiple DMARC records found",
-            SPFRecordFoundWhereDMARCRecordShouldBe: "SPF record found where DMARC record should be",
-            UnverifiedDMARCURIDestination: "Unverified DMARC URI destination",
-            UnrelatedTXTRecordFoundAtDMARC: "Unrelated TXT record found at DMARC record",
-            DMARCReportEmailAddressMissingMXRecords: "DMARC report email address missing MX records",
-            DMARCSyntaxError: "Invalid DMARC record syntax",
-            InvalidDMARCTag: "Invalid DMARC tag",
-            InvalidDMARCTagValue: "Invalid DMARC tag value",
-            InvalidDMARCReportURI: "Invalid DMARC report URI",
-        }
-        result["dmarc_error"] = error_messages.get(type(e), str(e))
-        result["error"] = "Domain record check failed"
-    except Exception as e:
-        result["dmarc_error"] = str(e)
-        result["error"] = "Domain record check failed"
+        while True:
+            # Poll for messages
+            msg = consumer.poll(timeout=1.0)
+            if msg is None:
+                continue
 
-    return result
+            if msg.error() and msg.error().code() != KafkaError._PARTITION_EOF:
+                print(f"Error: {msg.error()}")
+                break
+
+            # Process message
+            message_data = json.loads(msg.value().decode("utf-8"))
+            print(f"Received message: {message_data}")
+            domain = message_data.get("body", {}).get("domain")
+            if not domain:
+                print(f"Error: No domain found in message: {message_data}")
+                continue
+            result = validate_domain_records(domain)
+
+            # Return validation result by publishing to result topic
+            producer.produce(producer_topic, json.dumps(result).encode("utf-8"))
+            producer.flush()
+            print(f"Publish validation result: {result}")
+
+    except KeyboardInterrupt:
+        print("Shutting down...")
+    finally:
+        # Clean up
+        consumer.close()
+        producer.flush()  # Ensure all messages are sent
+
+
+if __name__ == "__main__":
+    main()

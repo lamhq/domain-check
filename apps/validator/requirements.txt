@@ -1,0 +1,4 @@
+confluent-kafka==2.10.1
+validators==0.35.0
+checkdmarc==5.8.6
+urllib3==1.26.6

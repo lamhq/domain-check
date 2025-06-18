@@ -58,8 +58,8 @@ export default function DomainItem({ domain }: DomainItemProps) {
         ) : (
           <>
             <RecordCheckStatus domain={domain} recordType={RecordType.SPF} />
-            <RecordCheckStatus domain={domain} recordType={RecordType.DKIM} />
             <RecordCheckStatus domain={domain} recordType={RecordType.DMARC} />
+            <RecordCheckStatus domain={domain} recordType={RecordType.DKIM} />
           </>
         )}
       </AccordionDetails>

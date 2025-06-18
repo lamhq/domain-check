@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { KafkaService } from 'nestjs-kafka';
 import { Repository } from 'typeorm';
 import { CreateDomainDto } from '../dtos/create-domain.dto';
 import { Domain, DomainStatus } from '../entities/domain.entity';
+import { CheckResult } from '../types';
 
 @Injectable()
 export class DomainService {
   constructor(
     @InjectRepository(Domain)
-    private domainRepository: Repository<Domain>,
+    private readonly domainRepository: Repository<Domain>,
+    private readonly kafkaService: KafkaService,
   ) {}
 
   async create(createDomainDto: CreateDomainDto): Promise<Domain> {
@@ -17,17 +20,26 @@ export class DomainService {
       where: { domain: createDomainDto.domain },
     });
 
+    let domain: Domain;
     if (existingDomain) {
-      // Update the existing domain's updatedAt timestamp
-      existingDomain.updatedAt = new Date();
-      return this.domainRepository.save(existingDomain);
+      // Update the existing domain for rechecking
+      domain = existingDomain;
+      domain.updatedAt = new Date();
+      domain.status = DomainStatus.PENDING;
+    } else {
+      // Create new domain
+      domain = this.domainRepository.create({
+        domain: createDomainDto.domain,
+        status: DomainStatus.PENDING,
+        updatedAt: new Date(),
+      });
     }
-
-    // Create new domain
-    const domain = this.domainRepository.create({
-      domain: createDomainDto.domain,
-      status: DomainStatus.PENDING,
-      updatedAt: new Date(),
+    // Add a request to validate the domain
+    await this.kafkaService.sendMessage('domain-check-requests', {
+      body: { domain: domain.domain },
+      messageId: `validate-domain-${Date.now()}`,
+      messageType: 'validate-domain',
+      topicName: 'domain-check-requests',
     });
 
     return this.domainRepository.save(domain);
@@ -39,5 +51,22 @@ export class DomainService {
       skip: offset,
       take: limit,
     });
+  }
+
+  async updateDomainCheckResult(checkResult: CheckResult): Promise<Domain> {
+    const domain = await this.domainRepository.findOne({
+      where: { domain: checkResult.domain },
+    });
+    if (!domain) {
+      throw new NotFoundException('Domain not found');
+    }
+    domain.status = checkResult.error ? DomainStatus.FAILED : DomainStatus.PASSED;
+    domain.dmarc = checkResult.dmarc === 'pass';
+    domain.dmarcError = checkResult.dmarc_error;
+    domain.spf = checkResult.spf === 'pass';
+    domain.spfError = checkResult.spf_error;
+    domain.dkim = checkResult.dkim === 'pass';
+    domain.dkimError = checkResult.dkim_error;
+    return this.domainRepository.save(domain);
   }
 }
