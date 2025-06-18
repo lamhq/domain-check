@@ -12,7 +12,7 @@ import type { User } from '../../types';
 
 const defaultValues: SignInFormData = {
   username: 'test@test.com',
-  password: 'password',
+  password: '12345',
 };
 
 export default function SignInPage() {

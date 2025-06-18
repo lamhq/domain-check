@@ -18,6 +18,7 @@ export default defineConfig({
       // proxy api requests starting with /api to the API server
       '/api': {
         target: process.env.PROXY_API_URL,
+        pathRewrite: { ['/api']: '' },
       },
     },
   },

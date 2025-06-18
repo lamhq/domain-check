@@ -4,7 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 
+console.log(process.env.DB_HOST);
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -15,10 +17,11 @@ import { AppService } from './app.service';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: ['src/**/*.entity.ts'],
-      synchronize: process.env.NODE_ENV !== 'production',
+      entities: [__dirname + '../../**/*.entity.js'],
+      synchronize: false,
       logging: process.env.NODE_ENV !== 'production',
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

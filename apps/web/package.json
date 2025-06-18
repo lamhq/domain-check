@@ -6,7 +6,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "rsbuild build",
-    "dev": "rsbuild dev --port 6001",
+    "dev": "rsbuild dev --port 3001",
     "preview": "rsbuild preview",
     "lint": "tsc --noEmit && eslint",
     "format": "prettier --write .",
