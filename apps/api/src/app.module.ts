@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { DomainModule } from './domain/domain.module';
 
 console.log(process.env.DB_HOST);
 @Module({
@@ -22,6 +23,7 @@ console.log(process.env.DB_HOST);
       logging: process.env.NODE_ENV !== 'production',
     }),
     AuthModule,
+    DomainModule,
   ],
   controllers: [AppController],
   providers: [AppService],
