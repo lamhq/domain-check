@@ -1,6 +1,7 @@
 import type { JSX } from 'react';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 import { Navigate } from 'react-router';
+import { useLocalStorage } from '../common/hooks';
 
 type AuthContextType<T> = {
   user?: T;
@@ -21,7 +22,7 @@ export function AuthProvider<T>({
   children,
   initialState = undefined,
 }: AuthProviderProps<T>) {
-  const [user, setUser] = useState<T | undefined>(initialState);
+  const [user, setUser] = useLocalStorage<T | undefined>('user', initialState);
 
   const signIn: AuthContextType<T>['signIn'] = (data) => {
     setUser(data.user);
@@ -30,6 +31,14 @@ export function AuthProvider<T>({
   const signOut = () => {
     setUser(undefined);
   };
+
+  useEffect(() => {
+    // auto sign out when session expired
+    window.addEventListener('auth:signout', signOut);
+    return () => {
+      window.removeEventListener('auth:signout', signOut);
+    };
+  }, []);
 
   return (
     <AuthContext.Provider
