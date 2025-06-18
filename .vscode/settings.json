@@ -4,5 +4,12 @@
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "always"
-  }
+  },
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.testing.pytestArgs": ["apps/validator"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
