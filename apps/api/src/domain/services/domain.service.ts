@@ -27,6 +27,7 @@ export class DomainService {
     const domain = this.domainRepository.create({
       domain: createDomainDto.domain,
       status: DomainStatus.PENDING,
+      updatedAt: new Date(),
     });
 
     return this.domainRepository.save(domain);
