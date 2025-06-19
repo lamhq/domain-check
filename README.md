@@ -4,10 +4,10 @@
 
 - [x] [web] build with docker
 - [x] [api] replace hardcoded address
-- [ ] [api] run migration on starting Docker
-- [ ] [api] build with docker
-- [ ] [validator] build with docker
+- [x] [api] run migration on starting Docker
+- [x] [api] build with docker
 - [ ] [global] create `docker-compose` file to test the whole system
+- [ ] [validator] build with docker
 - [ ] [global] create two kafka topics when starting with docker compose
 - [ ] [api] update `README.md`
 - [ ] [web] update `README.md`
@@ -24,6 +24,7 @@
 - [ ] [validator] implement CI to run test on Github Action
 - [ ] [web] fix responsive issue of signin page
 - [ ] [web] review `sx` declaration in `DomainFormView`
+- [ ] [wev] fix: domain `example.com` is on top
 
 ### Web base source code
 
@@ -66,14 +67,17 @@ docker run --rm --name postgres-13.3 \
 
 ### Kafka
 
+Run Kafka for connecting from docker:
+
 ```sh
 docker run --rm --name kafka \
   -p 9092:9092 \
-  -e KAFKA_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
-  -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://host.docker.internal:9092 \
-  -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
+  -e KAFKA_LISTENERS=LOCAL://:9092,CONTROLLER://:9093 \
+  -e KAFKA_ADVERTISED_LISTENERS=LOCAL://host.docker.internal:9092 \
+  -e KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,LOCAL:PLAINTEXT \
   -e KAFKA_NODE_ID=1 \
   -e KAFKA_PROCESS_ROLES=broker,controller \
+  -e KAFKA_INTER_BROKER_LISTENER_NAME=LOCAL \
   -e KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER \
   -e KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093 \
   -e KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1 \
@@ -82,7 +86,20 @@ docker run --rm --name kafka \
   -e KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0 \
   -e KAFKA_NUM_PARTITIONS=3 \
   apache/kafka:latest
+```
 
+Create topics using a separated container:
+
+```sh
+docker build --target msg-broker-init --tag msg-broker-init:latest .
+docker run --rm --name msg-broker-init \
+  -e KAFKA_BOOTSTRAP_SERVER=host.docker.internal:9092 \
+  msg-broker-init:latest
+```
+
+Create topics inside Kafka container:
+
+```sh
 docker exec --workdir /opt/kafka/bin/ -i kafka sh -c "\
   ./kafka-topics.sh --create \
     --bootstrap-server localhost:9092 \
@@ -96,12 +113,8 @@ docker exec --workdir /opt/kafka/bin/ -i kafka sh -c "\
     --partitions 1 \
     --topic domain-check-requests"
 
-
 docker exec --workdir /opt/kafka/bin/ -it kafka sh
 ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic validate-domain-topic --from-beginning
-
-# -e KAFKA_AUTO_CREATE_TOPICS_ENABLE=true \
-#   -e KAFKA_CREATE_TOPICS="domain-check-results:1:1,domain-check-requests:1:1:compact" \
 ```
 
 ### Web
@@ -117,8 +130,8 @@ docker run --name web-app --rm -p 3001:80 -e API_URL=http://host.docker.internal
 Debug:
 
 ```sh
-docker build --target build -t dapi-app .
-docker run --rm -it api-app sh
+docker build --target build -t debug-image .
+docker run --rm -it debug-image sh
 ```
 
 ### API

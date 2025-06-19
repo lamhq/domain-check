@@ -30,3 +30,12 @@ COPY apps/api/infra/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 EXPOSE 3000
 CMD [ "/docker-entrypoint.sh" ]
+
+FROM apache/kafka:latest AS msg-broker-init
+# Copy entrypoint script for Kafka topic creation
+COPY apps/msg-broker-init/kafka-init.sh /kafka-init.sh
+USER root
+RUN chmod +x /kafka-init.sh
+USER appuser
+EXPOSE 9092
+CMD [ "/kafka-init.sh" ]

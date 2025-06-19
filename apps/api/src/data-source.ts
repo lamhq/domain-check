@@ -9,7 +9,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  migrations: [__dirname + '/migrations/*.ts'],
+  migrations: ['dist/migrations/*.js'], // relative path to the location from which the migration is executed
   migrationsTableName: 'migrations',
   logging: process.env.NODE_ENV !== 'production',
 });

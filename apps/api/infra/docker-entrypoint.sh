@@ -1,5 +1,11 @@
 #!/bin/sh
 set -e
 
-pnpm run migrate
-exec pnpm start 
+# Wait for Kafka topics to be created
+sleep 5
+
+# Run migrations
+pnpm run migrate-prod
+
+# Start the application
+exec pnpm start

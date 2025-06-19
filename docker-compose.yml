@@ -1,0 +1,115 @@
+version: "3.8"
+services:
+  database:
+    image: postgres:13.3
+    container_name: database
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: testadmin
+      POSTGRES_PASSWORD: test12345
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - test-db:/var/lib/postgresql/data
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U testadmin -d testdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  msg-broker:
+    image: apache/kafka:latest
+    container_name: msg-broker
+    environment:
+      - KAFKA_LISTENERS=BROKER://:9092,CONTROLLER://:9093
+      - KAFKA_ADVERTISED_LISTENERS=BROKER://msg-broker:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,BROKER:PLAINTEXT
+      - KAFKA_NODE_ID=1
+      - KAFKA_PROCESS_ROLES=broker,controller
+      - KAFKA_INTER_BROKER_LISTENER_NAME=BROKER
+      - KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CONTROLLER_QUORUM_VOTERS=1@localhost:9093
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1
+      - KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1
+      - KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS=0
+      - KAFKA_NUM_PARTITIONS=3
+    ports:
+      - "9092:9092"
+    networks:
+      - app-net
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1",
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+
+  msg-broker-init:
+    build:
+      context: .
+      target: msg-broker-init
+    container_name: msg-broker-init
+    depends_on:
+      msg-broker:
+        condition: service_healthy
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=msg-broker:9092
+    networks:
+      - app-net
+
+  api-app:
+    build:
+      context: .
+      target: api
+    container_name: api-app
+    depends_on:
+      database:
+        condition: service_healthy
+      msg-broker:
+        condition: service_healthy
+    environment:
+      PORT: 3000
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_USERNAME: testadmin
+      DB_PASSWORD: test12345
+      DB_DATABASE: testdb
+      NODE_ENV: production
+      JWT_SECRET: abcd
+      KAFKA_BROKER: msg-broker:9092
+      KAFKA_CLIENT_ID: api-app
+      KAFKA_GROUP_ID: api-app
+    ports:
+      - "3000:3000"
+    networks:
+      - app-net
+
+  web-app:
+    build:
+      context: .
+      target: web
+    container_name: web-app
+    depends_on:
+      - api-app
+    environment:
+      API_URL: http://api-app:3000
+    ports:
+      - "3001:80"
+    networks:
+      - app-net
+
+volumes:
+  test-db:
+
+networks:
+  app-net:
+    driver: bridge
