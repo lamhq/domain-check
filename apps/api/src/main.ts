@@ -11,13 +11,13 @@ async function bootstrap() {
 
   // auto generate API doc
   const config = new DocumentBuilder()
-    .setTitle('NestJS API')
+    .setTitle('Domain Check API')
     .setDescription('API for the app')
     .setVersion('1.0')
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/doc', app, documentFactory);
+  SwaggerModule.setup('api/docs', app, documentFactory);
 
   await app.listen(process.env.PORT || 3000);
 }
