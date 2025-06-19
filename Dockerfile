@@ -39,3 +39,11 @@ RUN chmod +x /kafka-init.sh
 USER appuser
 EXPOSE 9092
 CMD [ "/kafka-init.sh" ]
+
+FROM python:3.9.6-slim AS validator
+WORKDIR /validator
+COPY apps/validator/requirements.txt ./
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
+COPY apps/validator/ ./
+CMD [ "python", "main.py" ]

@@ -38,5 +38,6 @@ coverage
 README.md
 *.md
 
-# Python app
-apps/validator
+# Python
+.pytest_cache
+.venv

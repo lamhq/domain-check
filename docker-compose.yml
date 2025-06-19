@@ -92,6 +92,12 @@ services:
       - "3000:3000"
     networks:
       - app-net
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   web-app:
     build:
@@ -99,13 +105,27 @@ services:
       target: web
     container_name: web-app
     depends_on:
-      - api-app
+      api-app:
+        condition: service_healthy
     environment:
       API_URL: http://api-app:3000
     ports:
       - "3001:80"
     networks:
       - app-net
+
+  validator:
+    build:
+      context: .
+      target: validator
+    container_name: validator
+    depends_on:
+      api-app:
+        condition: service_healthy
+    networks:
+      - app-net
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=msg-broker:9092
 
 volumes:
   test-db:
