@@ -16,7 +16,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/jest/bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs",
-    "migrate": "pnpm run typeorm migration:run -d ./data-source.ts"
+    "migrate": "typeorm migration:run -d dist/data-source.js"
   },
   "engines": {
     "npm": ">=10.0.0",
@@ -92,5 +92,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
-  }
+  },
+  "files": [
+    "dist"
+  ]
 }

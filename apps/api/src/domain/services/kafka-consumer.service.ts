@@ -9,9 +9,7 @@ export class KafkaConsumerService extends AbstractKafkaConsumer {
     super();
   }
 
-  protected registerTopic(): void {
-    this.addTopic('domain-check-results');
-  }
+  protected registerTopic(): void {}
 
   @SubscribeToFixedGroup('domain-check-results')
   async handleDomainCheckResult(message: string) {

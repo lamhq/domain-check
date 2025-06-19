@@ -25,5 +25,8 @@ CMD ["/docker-entrypoint.sh"]
 FROM base AS api
 COPY --from=build /prod/api /prod/api
 WORKDIR /prod/api
-EXPOSE 8001
-CMD [ "pnpm", "start" ]
+# Copy entrypoint script for api
+COPY apps/api/infra/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+EXPOSE 3000
+CMD [ "/docker-entrypoint.sh" ]

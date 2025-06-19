@@ -60,7 +60,6 @@ export default function DomainFormView({
             error={!!errors.domain}
             helperText={errors.domain?.message}
             color={errors.domain ? 'error' : 'primary'}
-            placeholder="example.com"
           />
         )}
       />
