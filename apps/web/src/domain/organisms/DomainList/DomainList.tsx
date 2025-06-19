@@ -24,6 +24,7 @@ export default function DomainList() {
       return items;
     },
     placeholderData: keepPreviousData,
+    refetchInterval: 1000,
   });
 
   const handlePageChange = useCallback(

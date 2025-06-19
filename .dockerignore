@@ -1,0 +1,42 @@
+# Dependency directories
+node_modules
+
+# Logs
+npm-debug.log
+*.log
+
+# Git metadata
+.git
+.gitignore
+
+# IDE/editor settings
+.vscode
+.idea
+*.swp
+*.swo
+*~ 
+
+# OS-specific files
+.DS_Store
+
+# Build artifacts
+dist
+build
+
+# Test coverage output
+.nyc_output
+coverage
+.coverage
+
+# Caching
+.cache
+
+# Environment variables and metadata
+.env
+
+# Docs
+README.md
+*.md
+
+# Python app
+apps/validator
