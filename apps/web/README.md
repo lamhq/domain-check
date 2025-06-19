@@ -2,6 +2,11 @@
 
 A Single Page Web app for managing and checking domain records, built with React and TypeScript.
 
+## Requirements
+
+- Node.js >=22.12.0
+- pnpm >=9.15.1
+
 ## Local Development Setup
 
 ### 1. Install dependencies
