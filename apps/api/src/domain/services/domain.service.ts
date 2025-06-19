@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { KafkaService } from 'nestjs-kafka';
 import { Repository } from 'typeorm';
+import { DOMAIN_CHECK_REQUESTS_TOPIC } from '../constants';
 import { CreateDomainDto } from '../dtos/create-domain.dto';
 import { Domain, DomainStatus } from '../entities/domain.entity';
 import { CheckResult } from '../types';
@@ -35,11 +36,11 @@ export class DomainService {
       });
     }
     // Add a request to validate the domain
-    await this.kafkaService.sendMessage('domain-check-requests', {
+    await this.kafkaService.sendMessage(DOMAIN_CHECK_REQUESTS_TOPIC, {
       body: { domain: domain.domain },
       messageId: `validate-domain-${Date.now()}`,
       messageType: 'validate-domain',
-      topicName: 'domain-check-requests',
+      topicName: DOMAIN_CHECK_REQUESTS_TOPIC,
     });
 
     return this.domainRepository.save(domain);
