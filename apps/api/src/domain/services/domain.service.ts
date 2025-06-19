@@ -62,6 +62,7 @@ export class DomainService {
       throw new NotFoundException('Domain not found');
     }
     domain.status = checkResult.error ? DomainStatus.FAILED : DomainStatus.PASSED;
+    domain.error = checkResult.error;
     domain.dmarc = checkResult.dmarc === 'pass';
     domain.dmarcError = checkResult.dmarc_error;
     domain.spf = checkResult.spf === 'pass';

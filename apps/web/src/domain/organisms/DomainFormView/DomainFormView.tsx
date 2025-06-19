@@ -32,15 +32,21 @@ export default function DomainFormView({
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<DomainFormData>({
     defaultValues,
     resolver: yupResolver(domainFormSchema),
   });
 
+  const handleFormSubmit = async (data: DomainFormData) => {
+    await onSubmit(data);
+    reset(defaultValues);
+  };
+
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
       sx={{
         display: 'flex',
         flexDirection: { xs: 'column', sm: 'row' },

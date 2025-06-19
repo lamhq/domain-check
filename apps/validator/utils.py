@@ -1,3 +1,4 @@
+import dns.resolver
 import validators.domain as validate_domain
 from checkdmarc.spf import (
     get_spf_record,
@@ -24,6 +25,33 @@ from checkdmarc.dmarc import (
 )
 
 
+class DKIMRecordNotFound(Exception):
+    pass
+
+
+def get_dkim_record(domain, selectors=None):
+    if selectors is None:
+        selectors = ["default", "selector1", "google", "selector2", "s1", "s2"]
+
+    dkim_records = {}
+
+    for selector in selectors:
+        dkim_domain = f"{selector}._domainkey.{domain}"
+        try:
+            answers = dns.resolver.resolve(dkim_domain, "TXT")
+            for rdata in answers:
+                txt_record = "".join(s.decode("utf-8") for s in rdata.strings)
+                if "v=DKIM1" in txt_record:
+                    dkim_records[selector] = txt_record
+        except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN, dns.resolver.Timeout):
+            continue
+
+    if not dkim_records:
+        raise DKIMRecordNotFound("No DKIM record found")
+
+    return dkim_records
+
+
 def validate_domain_records(domain: str) -> dict:
     result = {
         "domain": domain,
@@ -32,6 +60,8 @@ def validate_domain_records(domain: str) -> dict:
         "spf_error": None,
         "dmarc": "fail",
         "dmarc_error": None,
+        "dkim": "fail",
+        "dkim_error": None,
     }
 
     if not validate_domain(domain):
@@ -57,10 +87,10 @@ def validate_domain_records(domain: str) -> dict:
             SPFTooManyDNSLookups: "SPF record exceeds maximum DNS lookups (10)",
         }
         result["spf_error"] = error_messages.get(type(e), str(e))
-        result["error"] = "Domain record check failed"
+        result["error"] = "SPF check failed"
     except Exception as e:
         result["spf_error"] = str(e)
-        result["error"] = "Domain record check failed"
+        result["error"] = "SPF check failed"
 
     # DMARC validation
     try:
@@ -93,9 +123,20 @@ def validate_domain_records(domain: str) -> dict:
             InvalidDMARCReportURI: "Invalid DMARC report URI",
         }
         result["dmarc_error"] = error_messages.get(type(e), str(e))
-        result["error"] = "Domain record check failed"
+        result["error"] = "DMARC check failed"
     except Exception as e:
         result["dmarc_error"] = str(e)
-        result["error"] = "Domain record check failed"
+        result["error"] = "DMARC check failed"
+
+    # DKIM validation
+    try:
+        get_dkim_record(domain)
+        result["dkim"] = "pass"
+    except DKIMRecordNotFound as e:
+        result["dkim_error"] = "No DKIM record found"
+        result["error"] = "DKIM check failed"
+    except Exception as e:
+        result["dkim_error"] = str(e)
+        result["error"] = "DKIM check failed"
 
     return result

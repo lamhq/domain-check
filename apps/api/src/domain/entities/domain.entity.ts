@@ -74,6 +74,14 @@ export class Domain {
   })
   dkimError: string | null;
 
+  @Column({
+    name: 'error',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  error: string | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

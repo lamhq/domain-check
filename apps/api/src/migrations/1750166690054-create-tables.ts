@@ -27,7 +27,8 @@ export class CreateTables1750166690054 implements MigrationInterface {
         "spf" boolean NOT NULL DEFAULT false,
         "spf_error" varchar(255),
         "dkim" boolean NOT NULL DEFAULT false,
-        "dkim_error" varchar(255)
+        "dkim_error" varchar(255),
+        "error" varchar(255)
       )
     `);
   }
