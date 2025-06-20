@@ -175,3 +175,6 @@ Desktop.ini
 # Temporary files
 *.tmp
 *.temp 
+
+# Sample scripts
+test_sample.py
