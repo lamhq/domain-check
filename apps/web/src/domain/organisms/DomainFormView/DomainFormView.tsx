@@ -32,15 +32,15 @@ export default function DomainFormView({
     control,
     handleSubmit,
     formState: { errors },
-    reset,
+    setValue,
   } = useForm<DomainFormData>({
     defaultValues,
     resolver: yupResolver(domainFormSchema),
   });
 
-  const handleFormSubmit = async (data: DomainFormData) => {
-    await onSubmit(data);
-    reset(defaultValues);
+  const handleFormSubmit = (data: DomainFormData) => {
+    onSubmit(data);
+    setValue('domain', '');
   };
 
   return (
