@@ -1,3 +1,4 @@
+// TODO: remove this comment after testing
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
@@ -6,7 +7,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable cookie parser middleware (test)
+  // Enable cookie parser middleware
   app.use(cookieParser());
 
   // auto generate API doc
