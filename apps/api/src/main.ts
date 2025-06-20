@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable cookie parser middleware
+  // Enable cookie parser middleware (test)
   app.use(cookieParser());
 
   // auto generate API doc
