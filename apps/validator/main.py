@@ -1,4 +1,3 @@
-# TODO: remove this comment after testing (1)
 import json
 import os
 from confluent_kafka import Consumer, Producer, KafkaError

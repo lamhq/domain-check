@@ -1,12 +1,9 @@
-name: Validator App Tests
+name: Validator App CI
 
 on:
   push:
     paths:
       - "apps/validator/**"
-  # pull_request:
-  #   paths:
-  #     - "apps/validator/**"
 
 jobs:
   test:
