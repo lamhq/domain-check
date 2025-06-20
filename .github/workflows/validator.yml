@@ -4,9 +4,9 @@ on:
   push:
     paths:
       - "apps/validator/**"
-  pull_request:
-    paths:
-      - "apps/validator/**"
+  # pull_request:
+  #   paths:
+  #     - "apps/validator/**"
 
 jobs:
   test:

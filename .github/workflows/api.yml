@@ -4,9 +4,9 @@ on:
   push:
     paths:
       - "apps/api/**"
-  pull_request:
-    paths:
-      - "apps/api/**"
+  # pull_request:
+  #   paths:
+  #     - "apps/api/**"
 
 jobs:
   lint:
