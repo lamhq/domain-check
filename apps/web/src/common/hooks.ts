@@ -6,8 +6,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       const item = window.localStorage.getItem(key);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       return item ? (JSON.parse(item) as T) : initialValue;
-    } catch (err) {
-      console.warn(`Error reading localStorage key “${key}”:`, err);
+    } catch {
       return initialValue;
     }
   });
@@ -16,7 +15,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     try {
       window.localStorage.setItem(key, JSON.stringify(value));
     } catch (err) {
-      console.warn(`Error setting localStorage key “${key}”:`, err);
+      console.warn(`Error setting localStorage key "${key}":`, err);
     }
   }, [key, value]);
 
