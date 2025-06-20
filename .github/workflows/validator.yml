@@ -1,0 +1,42 @@
+name: Validator App Tests
+
+on:
+  push:
+    paths:
+      - "apps/validator/**"
+  pull_request:
+    paths:
+      - "apps/validator/**"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Unit Test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('apps/validator/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        working-directory: apps/validator
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      - name: Run tests
+        working-directory: apps/validator
+        run: |
+          pytest -svv test_validate_domain_records.py

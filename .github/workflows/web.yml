@@ -1,0 +1,41 @@
+name: Web App CI
+
+on:
+  push:
+    paths:
+      - "apps/web/**"
+  pull_request:
+    paths:
+      - "apps/web/**"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pnpm install
+      - name: Lint
+        run: pnpm lint
+
+  test:
+    runs-on: ubuntu-latest
+    name: Unit Test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pnpm install
+      - name: Test
+        run: pnpm test
+
+  # deploy:
+  #   needs: [lint, test]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: production
+  #   steps:
+  #     - name: Deploy your app
+  #       run: echo "🚀 Deploying to production..."

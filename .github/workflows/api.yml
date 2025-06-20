@@ -1,0 +1,77 @@
+name: API App CI
+
+on:
+  push:
+    paths:
+      - "apps/api/**"
+  pull_request:
+    paths:
+      - "apps/api/**"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Lint
+        run: pnpm --filter api lint
+
+  test:
+    runs-on: ubuntu-latest
+    name: Unit Test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Test
+        run: pnpm --filter api test
+
+  # build:
+  #   runs-on: ubuntu-latest
+  #   name: Build
+  #   needs: [lint, test]
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: "22"
+  #         cache: "pnpm"
+
+  #     - name: Install dependencies
+  #       run: pnpm install
+
+  #     - name: Build API
+  #       run: pnpm --filter api build
+
+  # deploy:
+  #   needs: [lint, test, build]
+  #   runs-on: ubuntu-latest
+  #   environment:
+  #     name: production
+  #   steps:
+  #     - name: Deploy your API
+  #       run: echo "🚀 Deploying API to production..."
