@@ -9,14 +9,6 @@ import { signInMutation, type SignInResponse } from '../../api';
 import { AuthProvider } from '../../index';
 import SignInPage from './SignInPage';
 
-// Mock toast
-// jest.mock<typeof toast>('react-hot-toast', () => {
-//   const actual = jest.requireActual<typeof toast>('react-hot-toast');
-//   actual.success = jest.fn<typeof toast.success>();
-//   actual.error = jest.fn<typeof toast.error>();
-//   return actual;
-// });
-
 // Mock signInMutation
 jest.mock('../../api', () => {
   const actual = jest.requireActual<object>('../../api');
