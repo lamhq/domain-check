@@ -67,7 +67,7 @@ The project architecture is organized according to the five levels of [Atomic De
 
 ```
 src/
-└── components/
+└── auth/
     ├── atoms/
     ├── molecules/
     ├── organisms/
