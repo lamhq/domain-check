@@ -29,15 +29,19 @@ docker compose up
 - The Python script that perform domain checking will run on the background
 - The API documentation (Swagger UI) will be available at [http://localhost:3000/api/docs](http://localhost:3000/api/docs)
 
+## Local Development Setup
+
+To set up development environment and run services locally, please refer to the `README.md` file within each service's directory.
+
 ## System Architecture
 
 The system is composed of several services:
 
-- **Web App**: A React SPA web for end-users.
-- **API App**: A NestJS backend that provides functionalities for the web.
+- **Web App**: A React SPA web for end-users. Located in `apps/web`.
+- **API App**: A NestJS backend that provides functionalities for the web. Located in `apps/api`.
 - **Database**: a PostgreSQL database for storing user data and domain check history.
 - **Message Broker**: enables asynchronous, decoupled communication between the API app and the **validator**.
-- **Validator**: A Python script that listen for domain check requests from the message broker, performs validation, and publishes results back.
+- **Validator**: A Python script that listen for domain check requests from the message broker, performs validation, and publishes results back. Located in `apps/validator`.
 
 ### How it work?
 
